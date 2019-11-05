@@ -14,6 +14,13 @@ namespace banheiro_livre
             builder.Property(c => c.Descricao)
                 .HasMaxLength(50)
                 .IsRequired();
+
+            builder.Property(c => c.Status)
+                .IsRequired();
+
+            builder.HasMany(c => c.LimpezaBanheiros)
+                .WithOne(e => e.Banheiro)
+                .HasForeignKey(x => x.BanheiroId);
         }
     }
 }

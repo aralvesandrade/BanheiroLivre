@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +18,7 @@ namespace banheiro_livre.Controllers
         }
 
         [HttpGet]
-        public string[] Get()
+        public IEnumerable<Banheiro> Get()
         {
             return _banheiroService.GetAll();
         }
