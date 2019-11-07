@@ -3,6 +3,7 @@ using AutoMapper;
 using banheiro_livre.Domain;
 using banheiro_livre.Extensions;
 using banheiro_livre.ViewModel;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,14 +13,20 @@ namespace banheiro_livre.Controllers
     [ApiController]
     public class BanheiroController : ControllerBase
     {
-        private readonly BanheiroService _banheiroService;
-        private readonly IMapper _mapper;
         private readonly ILogger<BanheiroController> _logger;
+        private readonly IMapper _mapper;
+        private IValidator<AdicionarBanheiroPostRequest> _adicionarBanheiroValidator;
+        private readonly BanheiroService _banheiroService;
 
-        public BanheiroController(ILogger<BanheiroController> logger, IMapper mapper, BanheiroService banheiroService)
+        public BanheiroController(
+            ILogger<BanheiroController> logger,
+            IMapper mapper,
+            IValidator<AdicionarBanheiroPostRequest> adicionarBanheiroValidator,
+            BanheiroService banheiroService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _adicionarBanheiroValidator = adicionarBanheiroValidator ?? throw new ArgumentNullException(nameof(adicionarBanheiroValidator));
             _banheiroService = banheiroService ?? throw new ArgumentNullException(nameof(banheiroService));
         }
 
@@ -41,7 +48,8 @@ namespace banheiro_livre.Controllers
                 (bool sucesso, string erroMensagem, Banheiro banheiro) = _banheiroService.ListarPorId(id);
 
                 if (!sucesso)
-                    return BadRequest(erroMensagem);
+                    //return BadRequest(erroMensagem);
+                    return BadRequest(new ErrorResponse(new ErrorModel{ Message = erroMensagem }));
                 else
                     response = banheiro;
             }
@@ -55,9 +63,14 @@ namespace banheiro_livre.Controllers
         }
 
         [HttpPost("inserir")]
-        public IActionResult Adicionar([FromBody]ViewModelBanheiro body)
+        public IActionResult Adicionar([FromBody]AdicionarBanheiroPostRequest body)
         {
-            Banheiro banheiro = null;
+            var response = new AdicionarBanheiroPostResponse();
+
+            //var validationResult = _adicionarBanheiroValidator.Validate(body);
+
+            //if (!validationResult.IsValid)
+            //    return BadRequest(validationResult);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,7 +78,8 @@ namespace banheiro_livre.Controllers
             try
             {
                 var request = _mapper.Map<Banheiro>(body);
-                banheiro = _banheiroService.Adicionar(request);
+                var banheiro = _banheiroService.Adicionar(request);
+                response = _mapper.Map<AdicionarBanheiroPostResponse>(banheiro);
             }
             catch (Exception ex)
             {
@@ -73,7 +87,7 @@ namespace banheiro_livre.Controllers
                 return ReplyHelper.ErrorMessage(ex.Message);
             }
 
-            return Ok(banheiro);
+            return Ok(response);
         }
     }
 }

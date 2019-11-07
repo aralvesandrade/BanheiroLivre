@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using banheiro_livre.Domain;
+using banheiro_livre.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -54,6 +55,9 @@ namespace banheiro_livre
         {
             try
             {
+                banheiro.Ativo = true;
+                banheiro.Status = (int)Status.Livre;
+
                 _db.Set<Banheiro>().Add(banheiro);
                 _db.SaveChanges();
             }

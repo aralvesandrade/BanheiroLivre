@@ -8,7 +8,7 @@ namespace banheiro_livre.MappingProfiles
     {
         public RequestToDomain()
         {
-            CreateMap<ViewModelBanheiro, Banheiro>();
+            CreateMap<AdicionarBanheiroPostRequest, Banheiro>();
         }
     }
 }

@@ -1,5 +1,9 @@
 using AutoMapper;
 using banheiro_livre.Extensions;
+using banheiro_livre.Filters;
+using banheiro_livre.ViewModel;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +26,13 @@ namespace banheiro_livre
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(option => option.EnableEndpointRouting = false)
-                .AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers(options =>
+            {
+                options.EnableEndpointRouting = false;
+                options.Filters.Add<ValidationFilter>();
+            })
+            //.AddFluentValidation(mvcConfiguration => mvcConfiguration.RegisterValidatorsFromAssemblyContaining<Startup>())
+            .AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             var connection = "Data Source=BanheiroLivre.db";
 
@@ -47,6 +56,8 @@ namespace banheiro_livre
             services.AddTransient<BanheiroService>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddTransient<IValidator<AdicionarBanheiroPostRequest>, AdicionarBanheiroValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
