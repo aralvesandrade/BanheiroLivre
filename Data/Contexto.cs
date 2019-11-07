@@ -1,3 +1,4 @@
+using banheiro_livre.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace banheiro_livre

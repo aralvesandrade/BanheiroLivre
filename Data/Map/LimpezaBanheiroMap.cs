@@ -1,3 +1,4 @@
+using banheiro_livre.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +10,7 @@ namespace banheiro_livre
         {
             builder.ToTable("LimpezaBanheiro");
 
-            builder.HasKey(c => new { c.Id, c.BanheiroId, c.Dia });
+            builder.HasKey(c => new { c.Id, c.BanheiroId, c.Dia, c.Servico });
 
             builder.Property(c => c.BanheiroId)
                 .IsRequired();
@@ -18,13 +19,19 @@ namespace banheiro_livre
                 .HasMaxLength(3)
                 .IsRequired();
 
-            builder.Property(c => c.Serviço)
+            builder.Property(c => c.Servico)
                 .IsRequired();
 
-            builder.Property(c => c.Inicio)
+            builder.Property(c => c.ManhaInicio)
                 .IsRequired();
 
-            builder.Property(c => c.Final)
+            builder.Property(c => c.ManhaFinal)
+                .IsRequired();
+
+            builder.Property(c => c.TardeInicio)
+                .IsRequired();
+
+            builder.Property(c => c.TardeFinal)
                 .IsRequired();
         }
     }

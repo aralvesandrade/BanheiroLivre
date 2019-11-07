@@ -1,8 +1,8 @@
-namespace banheiro_livre
+namespace banheiro_livre.Domain.Enums
 {
-    public enum Serviço
+    public enum Servico
     {
-        Limpeza = 1,
-        Completa = 2
+        LimpezaCompleta = 1,
+        Revisao = 2
     }
 }

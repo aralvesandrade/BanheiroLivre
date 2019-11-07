@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace banheiro_livre
+namespace banheiro_livre.Domain
 {
     public class Banheiro
     {

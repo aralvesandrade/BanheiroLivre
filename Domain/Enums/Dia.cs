@@ -1,4 +1,4 @@
-namespace banheiro_livre
+namespace banheiro_livre.Domain.Enums
 {
     public static class Dia
     {

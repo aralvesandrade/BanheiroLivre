@@ -1,3 +1,5 @@
+using AutoMapper;
+using banheiro_livre.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +22,22 @@ namespace banheiro_livre
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(option => option.EnableEndpointRouting = false)
+                .AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             var connection = "Data Source=BanheiroLivre.db";
 
             services.AddDbContext<Contexto>(options =>
                 options.UseSqlite(connection));
+
+            var options = new DbContextOptionsBuilder<Contexto>()
+                .UseSqlite(connection)
+                .Options;
+
+            using (var context = new Contexto(options))
+            {
+                context.Database.EnsureCreated();
+            }
 
             services.AddSwaggerGen(x =>
             {
@@ -33,6 +45,8 @@ namespace banheiro_livre
             });
 
             services.AddTransient<BanheiroService>();
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,9 +58,7 @@ namespace banheiro_livre
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseSwagger();
@@ -56,6 +68,8 @@ namespace banheiro_livre
                 option.SwaggerEndpoint("/swagger/v1/swagger.json", "Banheiro Livre API");
                 option.RoutePrefix = string.Empty;
             });
+
+            app.DbInitializer();
 
             app.UseEndpoints(endpoints =>
             {
